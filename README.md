@@ -1,5 +1,9 @@
 ## Utility to get the MPAT info from a published MPAT page url
 
+### Requirements
+- node.js to run the application
+- an MPAT installation to make use of the produced files
+
 ### Installation
 
 In this directory, do:
