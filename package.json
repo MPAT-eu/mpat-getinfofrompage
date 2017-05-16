@@ -1,0 +1,16 @@
+{
+  "name": "getinfofrompage",
+  "version": "1.0.0",
+  "description": "get MPAT info from a page",
+  "main": "getinfofrompage.js",
+  "scripts": {
+    "start": "node getinfofrompage.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "after-load": "^1.0.4",
+    "cheerio": "^0.22.0",
+    "jsdom": "^10.1.0"
+  }
+}
