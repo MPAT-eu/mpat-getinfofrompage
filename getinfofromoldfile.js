@@ -1,6 +1,14 @@
-const afterLoad = require('after-load');
 const jsdom = require('jsdom');
 const fs = require('fs');
+
+function upgrade(c) {
+  const keys = Object.keys(c);
+  const res = {};
+  keys.forEach(key => {
+    res[key] = { _0: c[key] };
+  });
+  return res;
+}
 
 function processHtml(html) {
   const exportName = process.argv[3] || 'export';
@@ -28,7 +36,7 @@ function processHtml(html) {
   let script = null;
   for (let i = 0; i < scripts.length; i++) {
     script = scripts[i];
-    if (script.textContent.indexOf('MPATGlobalInformation') > 0) break;
+    if (script.textContent.indexOf('Post') > 0) break;
   }
   if (script === null) {
     console.log('did not find an MPAT script in this content');
@@ -36,7 +44,7 @@ function processHtml(html) {
     return;
   }
   eval(script.textContent);
-  background = MPATGlobalInformation.Post.meta.background || background;
+  background = Post.meta.background || background;
   console.log(`background: ${background}`);
   const result = {
     page: {
@@ -44,9 +52,9 @@ function processHtml(html) {
       post_title: exportName,
       meta: {
         mpat_content: {
-          componentStyles: MPATGlobalInformation.Post.meta.componentStyles,
+          componentStyles: Post.meta.componentStyles,
           background: background,
-          content: MPATGlobalInformation.Post.meta.content
+          content: upgrade(Post.meta.content)
         }
       }
     },
@@ -55,16 +63,16 @@ function processHtml(html) {
       post_title: `${exportName}layout`,
       meta: {
         mpat_content: {
-          layout: MPATGlobalInformation.Post.meta.layout
+          layout: Post.meta.layout
         }
       }
     }
   };
   fs.writeFileSync(`${exportName}.mpat-page`,
-                JSON.stringify(result));
+                   JSON.stringify(result));
   console.log(`Wrote: ${exportName}.mpat-page`);
 }
 
 console.log("fetching "+process.argv[2]);
-processHtml(afterLoad(process.argv[2]));
+processHtml(fs.readFileSync(process.argv[2]));
 

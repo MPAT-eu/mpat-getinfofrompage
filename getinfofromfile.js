@@ -1,4 +1,3 @@
-const afterLoad = require('after-load');
 const jsdom = require('jsdom');
 const fs = require('fs');
 
@@ -61,10 +60,10 @@ function processHtml(html) {
     }
   };
   fs.writeFileSync(`${exportName}.mpat-page`,
-                JSON.stringify(result));
+                   JSON.stringify(result));
   console.log(`Wrote: ${exportName}.mpat-page`);
 }
 
 console.log("fetching "+process.argv[2]);
-processHtml(afterLoad(process.argv[2]));
+processHtml(fs.readFileSync(process.argv[2]));
 
