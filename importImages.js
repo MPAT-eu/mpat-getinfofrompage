@@ -16,8 +16,8 @@ const importers = [];
 
 // import a image from a matching url
 function importImage(url) {
-  const already = importers.find(pair => pair.url === url);
-  if (already) return;
+  if (!url.startsWith(urlPrefix)) return url;
+  if (importers.find(pair => pair.url === url)) return;
   // if not already imported, get the image
   const importer = {url, name: url.substring(url.lastIndexOf('/')+1)};
   console.log('importing '+importer.name);
@@ -117,20 +117,23 @@ function updatePage(page) {
       switch(type) {
         case 'link':
         case 'video':
-          if (component.data.thumbnail) {
+          if (component.data.thumbnail &&
+              component.data.thumbnail.startsWith(urlPrefix)) {
             component.data.thumbnail = newurl(component.data.thumbnail);
             modified = true;
           }
           break;
         case 'image':
-          if (component.data.imgUrl) {
+          if (component.data.imgUrl&&
+              component.data.imgUrl.startsWith(urlPrefix)) {
             component.data.imgUrl = newurl(component.data.imgUrl);
             modified = true;
           }
           break;
         case 'launcher':
           component.data.listArray.forEach((element) => {
-            if (element.thumbnail) {
+            if (element.thumbnail &&
+                element.thumbnail.startsWith(urlPrefix)) {
               element.thumbnail = newurl(element.thumbnail);
               modified = true;
             }
