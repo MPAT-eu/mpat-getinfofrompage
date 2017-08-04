@@ -103,6 +103,12 @@ function updatePage(page) {
   const background = page.mpat_content.background;
   if (background.startsWith(urlPrefix)) {
     page.mpat_content.background = newurl(page.mpat_content.background);
+    if (!page.mpat_content.styles ||
+        (Array.isArray(page.mpat_content.styles) &&
+          page.mpat_content.styles.length === 0))
+      page.mpat_content.styles = {};
+    if (!page.mpat_content.styles.container) page.mpat_content.styles.container = {};
+    page.mpat_content.styles.container.backgroundImage = page.mpat_content.background;
     modified = true;
   }
   const content = page.mpat_content.content;
