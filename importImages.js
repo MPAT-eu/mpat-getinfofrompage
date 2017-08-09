@@ -65,10 +65,22 @@ function importImagesFromPage(page) {
             importImage(component.data.imgUrl);
           }
           break;
+        case 'redbutton':
+          if (component.data.img) {
+            importImage(component.data.img);
+          }
+          break;
         case 'launcher':
           component.data.listArray.forEach((element) => {
             if (element.thumbnail) {
               importImage(element.thumbnail);
+            }
+          });
+          break;
+        case 'gallery':
+          component.data.images.forEach((element) => {
+            if (element.attachmentUrl) {
+              importImage(element.attachmentUrl);
             }
           });
           break;
@@ -79,7 +91,7 @@ function importImagesFromPage(page) {
   });
 }
 
-// check that import when well and return newurl, or keep old url
+// check that import went well and return newurl, or keep old url
 function newurl(url) {
   const importer = importers.find(pair => pair.url === url);
   if (!importer) {
@@ -131,16 +143,32 @@ function updatePage(page) {
           break;
         case 'image':
           if (component.data.imgUrl&&
-              component.data.imgUrl.startsWith(urlPrefix)) {
+            component.data.imgUrl.startsWith(urlPrefix)) {
             component.data.imgUrl = newurl(component.data.imgUrl);
+            modified = true;
+          }
+          break;
+        case 'redbutton':
+          if (component.data.img &&
+            component.data.img.startsWith(urlPrefix)) {
+            component.data.img = newurl(component.data.img);
             modified = true;
           }
           break;
         case 'launcher':
           component.data.listArray.forEach((element) => {
             if (element.thumbnail &&
-                element.thumbnail.startsWith(urlPrefix)) {
+              element.thumbnail.startsWith(urlPrefix)) {
               element.thumbnail = newurl(element.thumbnail);
+              modified = true;
+            }
+          });
+          break;
+        case 'gallery':
+          component.data.images.forEach((element) => {
+            if (element.attachmentUrl &&
+              element.attachmentUrl.startsWith(urlPrefix)) {
+              element.attachmentUrl = newurl(element.attachmentUrl);
               modified = true;
             }
           });
@@ -171,10 +199,15 @@ function updatePage(page) {
 }
 
 function doPages(res) {
+  // get the pages array
   const pages = res.data;
+  // for each page, get the images to import
   pages.forEach(importImagesFromPage);
+  // promises is the array of promises to get image content
   Promise.all(promises).then(() => {
+    // promises2 is the array of promises to insert new images in the media library
     Promise.all(promises2).then(() => {
+      // then look at each page again and link to images in the media library
       pages.forEach(updatePage);
     });
   })
