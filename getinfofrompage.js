@@ -42,10 +42,12 @@ function processHtml(html) {
     page: {
       post_name: exportName,
       post_title: exportName,
+      post_type: "page",
       meta: {
         mpat_content: {
           componentStyles: MPATGlobalInformation.Post.meta.componentStyles,
           background: background,
+          model: MPATGlobalInformation.Post.meta.model,
           content: MPATGlobalInformation.Post.meta.content
         }
       }
@@ -53,6 +55,7 @@ function processHtml(html) {
     page_layout: {
       post_name: `${exportName}layout`,
       post_title: `${exportName}layout`,
+      post_type: 'page_layout',
       meta: {
         mpat_content: {
           layout: MPATGlobalInformation.Post.meta.layout
