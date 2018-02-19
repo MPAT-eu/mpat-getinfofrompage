@@ -2,8 +2,8 @@ const afterLoad = require('after-load');
 const jsdom = require('jsdom');
 const fs = require('fs');
 
-function processHtml(html) {
-  const exportName = process.argv[3] || 'export';
+function processHtml(html, ename) {
+  const exportName = ename || process.argv[3] || 'export';
   const { JSDOM } = jsdom;
   const document = new JSDOM(html).window.document;
   const scripts = document.getElementsByTagName('script');
@@ -63,8 +63,7 @@ function processHtml(html) {
       }
     }
   };
-  fs.writeFileSync(`${exportName}.mpat-page`,
-                JSON.stringify(result));
+  fs.writeFileSync(`${exportName}.mpat-page`, JSON.stringify(result));
   console.log(`Wrote: ${exportName}.mpat-page`);
   // links
   let c = MPATGlobalInformation.Post.meta.content;
@@ -72,12 +71,22 @@ function processHtml(html) {
     let component = c[a];
     Object.keys(component).forEach((s) => {
       let state = component[s];
-      if (state.type === 'link') console.log("link: "+state.data.url);
+      if (state.type === 'link') {
+        if (state.data.url) {
+          let url = (state.data.url.endsWith("#preview") ? state.data.url.substring(0, state.data.url.length - 8) : state.data.url);
+          if (url.endsWith("/")) url = url.substring(0, url.length-1);
+          let ee = url.substring(url.lastIndexOf("/")+1);
+          if (!fs.existsSync(ee+".mpat-page")) {
+            console.log("fetching "+url+" "+ee);
+            processHtml(afterLoad(url), ee);
+          }
+        }
+      }
     })
   });
-
 }
 
 console.log("fetching "+process.argv[2]);
 processHtml(afterLoad(process.argv[2]));
+
 

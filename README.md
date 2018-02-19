@@ -32,4 +32,27 @@ You can then import this file from the ImportExport page by clicking on the
  the page is not imported.
 If a layout of the same name exist, the layout is not imported.
 
+### Usage of getsite
 
+A whole site can be recursively downloaded, page by page. 
+
+```
+node getsite.js <URL> <exportNameForFirstPage>
+```
+
+After the first page, the file names are retrieved as part of the link url.
+Only pages pointed by a MPAT Link component are discovered and processed.
+Each file is created in its own *.mpat-page.
+Each link is considered an external link.
+
+### Usage of packSite
+
+After running the above getsite.js, your current directory is full of single pages.
+
+```
+node packSite.js
+```
+
+packSite creates a single ```all-pages.mpat-page``` from all .mpat-page in the current 
+directory, taking care that internal links are properly dealt with when you import the package 
+in an MPAT instance. Internal links are replaced with ```page://number``` URLs.
